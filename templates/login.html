@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>लॉगिन - AI Rural Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🌾 AI Rural Chatbot</h1>
+            <h2>लॉगिन करें / Login</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="ईमेल / Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="पासवर्ड / Password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">लॉगिन / Login</button>
+            </form>
+            
+            <p class="switch-form">
+                नया उपयोगकर्ता? / New User? 
+                <a href="/register">रजिस्टर करें / Register</a>
+            </p>
+            
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            const messageDiv = document.getElementById('message');
+            
+            if (data.success) {
+                messageDiv.className = 'message success';
+                messageDiv.textContent = data.message;
+                setTimeout(() => {
+                    window.location.href = '/chat';
+                }, 1000);
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = data.message;
+            }
+        });
+    </script>
+</body>
+</html>
