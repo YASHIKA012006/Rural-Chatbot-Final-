@@ -5,87 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Rural Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee');
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 900px;
+            margin: auto;
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            padding: 15px 20px;
+            color: white;
+        }
+
+        .icon-btn, #langToggle {
+            background: white;
+            border: none;
+            padding: 8px;
+            margin-left: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .icon-btn:hover, #langToggle:hover {
+            background: #e8f5e9;
+            transform: scale(1.1);
+        }
+
+        /* Sidebar */
+        .profile-sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 300px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            padding: 20px;
+        }
+
+        /* Messages */
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .welcome-message {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* Input */
+        .chat-input-container {
+            padding: 15px;
+            background: #eeeeee;
+        }
+
+        textarea {
+            width: 80%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        .send-btn {
+            padding: 10px 20px;
+            background: #43a047;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #2e7d32;
+        }
+    </style>
 </head>
 <body>
     <div class="chat-container">
-        <!-- Header -->
         <header class="chat-header">
             <div class="header-left">
                 <h1>🌾 AI Rural Assistant</h1>
             </div>
-            
             <div class="header-right">
-                <!-- Language Toggle -->
-                <div class="language-toggle">
-                    <button id="langToggle" onclick="toggleLanguage()">
-                        <span id="langText">हिं</span>
-                    </button>
-                </div>
-                
-                <!-- Voice Button -->
-                <button class="icon-btn" onclick="toggleVoice()" id="voiceBtn">
-                    🎤
-                </button>
-                
-                <!-- Upload Button -->
-                <button class="icon-btn" onclick="document.getElementById('fileInput').click()">
-                    📎
-                </button>
-                <input type="file" id="fileInput" style="display: none" onchange="uploadFile()">
-                
-                <!-- Profile Button -->
-                <button class="icon-btn" onclick="toggleProfile()">
-                    👤
-                </button>
-                
-                <!-- Logout -->
-                <button class="icon-btn" onclick="logout()">
-                    🚪
-                </button>
+                <button id="langToggle" onclick="toggleLanguage()"><span id="langText">हिं</span></button>
+                <button class="icon-btn" onclick="toggleVoice()">🎤</button>
+                <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+                <input type="file" id="fileInput" style="display:none;">
+                <button class="icon-btn" onclick="toggleProfile()">👤</button>
+                <button class="icon-btn" onclick="logout()">🚪</button>
             </div>
         </header>
-        
-        <!-- Profile Sidebar -->
+
         <div id="profileSidebar" class="profile-sidebar">
-            <div class="profile-content">
-                <h2>प्रोफ़ाइल / Profile</h2>
-                <div class="profile-info">
-                    <p><strong>नाम / Name:</strong></p>
-                    <input type="text" id="profileName" class="profile-input">
-                    <p><strong>ईमेल / Email:</strong> <span id="profileEmail"></span></p>
-                    <button onclick="updateProfile()" class="btn-primary">अपडेट / Update</button>
-                </div>
-                <button onclick="toggleProfile()" class="btn-secondary">बंद करें / Close</button>
-            </div>
+            <h2>प्रोफ़ाइल / Profile</h2>
+            <label>नाम / Name:</label>
+            <input type="text" id="profileName" class="profile-input">
+            <p><strong>ईमेल / Email: </strong><span id="profileEmail"></span></p>
+            <button class="send-btn" onclick="updateProfile()">अपडेट</button>
         </div>
-        
-        <!-- Chat Messages -->
+
         <div class="chat-messages" id="chatMessages">
             <div class="welcome-message">
                 <h2 id="welcomeText">नमस्ते! मैं आपकी मदद के लिए यहाँ हूँ। 🙏</h2>
-                <p id="welcomeSubtext">कृपया अपना सवाल पूछें या मुझसे बात करें।</p>
+                <p id="welcomeSubtext">कृपया अपना सवाल पूछें।</p>
             </div>
         </div>
-        
-        <!-- Chat Input -->
+
         <div class="chat-input-container">
-            <div class="file-preview" id="filePreview" style="display: none;">
-                <span id="fileName"></span>
-                <button onclick="clearFile()">❌</button>
-            </div>
-            
-            <div class="chat-input-wrapper">
-                <textarea 
-                    id="userInput" 
-                    placeholder="अपना संदेश यहाँ लिखें... / Type your message here..."
-                    rows="1"
-                    onkeypress="handleKeyPress(event)"
-                ></textarea>
-                <button onclick="sendMessage()" class="send-btn">भेजें / Send</button>
-            </div>
+            <textarea id="userInput" placeholder="अपना संदेश लिखें..." rows="1"></textarea>
+            <button class="send-btn" onclick="sendMessage()">भेजें</button>
         </div>
     </div>
-    
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
